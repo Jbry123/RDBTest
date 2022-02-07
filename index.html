@@ -48,10 +48,11 @@ import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threej
 import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/examples/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/examples/jsm/loaders/GLTFLoader.js';
 import {GUI} from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
-
+let background = '../RDBtest2/textures/background2.jpeg';
 function main() {
   const canvas = document.querySelector('#b');
-  const renderer = new THREE.WebGLRenderer({canvas});
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+  renderer.setPixelRatio( window.devicePixelRatio );
   renderer.shadowMap.enabled = true;
 
   const fov = 45;
@@ -67,6 +68,20 @@ function main() {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#DEFEFF');
+
+  const geometry = new THREE.SphereGeometry( 500, 60, 40 );
+				// invert the geometry on the x-axis so that all of the faces point inward
+				geometry.scale( - 1, 1, 1 );
+
+				const texture = new THREE.TextureLoader().load( background );
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+				texture.encoding = THREE.sRGBEncoding;
+
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				const mesh = new THREE.Mesh( geometry, material );
+
+				scene.add( mesh );
 
   {
     const planeSize = 40;
@@ -91,9 +106,9 @@ function main() {
   }
 
   {
-    const skyColor = 0xB1E1FF;  // light blue
+    const skyColor = 0xf2f2f2;  // light blue
     const groundColor = 0xB97A20;  // brownish orange
-    const intensity = 1;
+    const intensity = .51;
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     scene.add(light);
   }
